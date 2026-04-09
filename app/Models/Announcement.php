@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['admin_id', 'title', 'content', 'is_active'])]
-class Annuoncement extends Model
+class Announcement extends Model
 {
     public function admin(): BelongsTo
     {

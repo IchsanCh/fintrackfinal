@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class);
     }
+
+    public function announcements(): HasMany
+    {
+        return $this->hasMany(Announcement::class, 'admin_id');
+    }
 }

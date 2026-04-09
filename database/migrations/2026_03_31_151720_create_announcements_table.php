@@ -10,7 +10,7 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::create('annuoncements', function (Blueprint $table) {
+        Schema::create('announcements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('admin_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
