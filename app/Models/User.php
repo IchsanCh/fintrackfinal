@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'email_verified_at'])]
+#[Fillable(['name', 'status', 'email', 'password', 'role', 'email_verified_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -64,5 +64,9 @@ class User extends Authenticatable
     public function announcements(): HasMany
     {
         return $this->hasMany(Announcement::class, 'admin_id');
+    }
+    public function emailVerifications(): HasMany
+    {
+        return $this->hasMany(EmailVerification::class);
     }
 }
