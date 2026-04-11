@@ -22,7 +22,6 @@ class LoginController extends Controller
             'email'    => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
-
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
                 ->withInput($request->only('email'))
