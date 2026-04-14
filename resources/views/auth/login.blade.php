@@ -124,7 +124,7 @@
 
                         {{-- Lupa password --}}
                         <div class="flex justify-end mt-1">
-                            <a href="#"
+                            <a href="{{ route('forgot-password') }}"
                                 class="text-xs text-base-content/60 font-semibold hover:text-primary transition-colors">
                                 Lupa password?
                             </a>

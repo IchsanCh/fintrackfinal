@@ -95,7 +95,8 @@
                             $active = request()->routeIs($item['route']);
                         @endphp
                         <li>
-                            <a href="{{ route($item['route']) }}"
+                            {{-- {{ route($item['route']) }} --}}
+                            <a href=""
                                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
                                       {{ $active ? 'bg-primary/15 text-primary' : 'text-base-content/60 hover:bg-base-300/60 hover:text-base-content' }}">
                                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -116,7 +117,7 @@
     </nav>
 
     {{-- Footer sidebar: info user --}}
-    <div class="px-4 py-4 border-t border-base-300 shrink-0">
+    {{-- <div class="px-4 py-4 border-t border-base-300 shrink-0">
         <div class="flex items-center gap-3">
             <div class="avatar avatar-placeholder">
                 <div class="bg-primary/20 rounded-full w-8 grid place-items-center">
@@ -130,6 +131,6 @@
                 <p class="text-[11px] text-base-content/40 truncate font-mono">{{ auth()->user()?->email }}</p>
             </div>
         </div>
-    </div>
+    </div> --}}
 
 </aside>

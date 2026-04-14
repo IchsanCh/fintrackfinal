@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ForgotPasswordController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,12 @@ Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
+
+    // Forgot & Reset Password
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])->name('forgot-password');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'store']);
+    Route::get('/reset-password', [ForgotPasswordController::class, 'edit'])->name('reset-password.edit');
+    Route::post('/reset-password', [ForgotPasswordController::class, 'update'])->name('reset-password');
 });
 
 // Logout

@@ -1,4 +1,4 @@
-<x-layouts.core title="Admin Dashboard — FinTrack">
+<x-layouts.core title="Admin Dashboard">
 
     {{-- Greeting --}}
     <div class="mb-8">
