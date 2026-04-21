@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,22 +15,18 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory;
     use Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
+
+    // ── Existing relations ──────────────────────────────────
     public function accounts(): HasMany
     {
         return $this->hasMany(Account::class);
@@ -51,6 +47,11 @@ class User extends Authenticatable
         return $this->hasMany(SavingGoal::class);
     }
 
+    public function budgets(): HasMany
+    {
+        return $this->hasMany(Budget::class);
+    }
+
     public function billReminders(): HasMany
     {
         return $this->hasMany(BillReminder::class);
@@ -65,8 +66,38 @@ class User extends Authenticatable
     {
         return $this->hasMany(Announcement::class, 'admin_id');
     }
+
     public function emailVerifications(): HasMany
     {
         return $this->hasMany(EmailVerification::class);
+    }
+
+    // ── Subscription & monetisasi ───────────────────────────
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /** Subscription yang sedang aktif (eager-load friendly) */
+    public function activeSubscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class)
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('expired_at')
+                  ->orWhere('expired_at', '>', now());
+            })
+            ->latestOfMany();
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function aiUsageLogs(): HasMany
+    {
+        return $this->hasMany(AiUsageLog::class);
     }
 }
