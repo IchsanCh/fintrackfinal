@@ -5,6 +5,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\AccountController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,6 +38,12 @@ Route::middleware('auth')->post('/logout', [LoginController::class, 'destroy'])-
 // User routes
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Akun
+    Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+    Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
+    Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
+    Route::delete('/accounts/{account}', [AccountController::class, 'destroy'])->name('accounts.destroy');
 });
 
 // Admin routes

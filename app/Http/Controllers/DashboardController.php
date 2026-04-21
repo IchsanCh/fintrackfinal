@@ -12,6 +12,7 @@ class DashboardController extends Controller
     // GET /dashboard — user
     public function index(): View
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         $stats = [

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendVerificationEmail;
 use App\Models\EmailVerification;
+use App\Models\Plan;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -73,11 +75,43 @@ class RegisterController extends Controller
         $user = $verification->user;
         $user->update(['email_verified_at' => now()]);
 
+        // Kasih trial Premium 7 hari
+        $this->assignPremiumTrial($user);
+
         // TODO: generate default kategori setelah step ini selesai
 
         session()->forget('verification_user_id');
 
-        return redirect()->route('login')->with('success', 'Email berhasil diverifikasi! Silakan login.');
+        return redirect()->route('login')->with('success', 'Email berhasil diverifikasi! Kamu mendapat Premium gratis selama 7 hari. Silakan login untuk mulai menggunakan FinTrack.');
+    }
+
+    /**
+     * Assign trial Premium 7 hari untuk user baru.
+     * Kalau plan Premium tidak ditemukan, fallback ke Free.
+     */
+    private function assignPremiumTrial(User $user): void
+    {
+        $premiumPlan = Plan::where('tier', 'premium')->where('is_active', true)->first();
+        $freePlan    = Plan::where('tier', 'free')->where('is_active', true)->first();
+
+        if ($premiumPlan) {
+            Subscription::create([
+                'user_id'    => $user->id,
+                'plan_id'    => $premiumPlan->id,
+                'status'     => 'active',
+                'started_at' => now(),
+                'expired_at' => now()->addDays(7),
+            ]);
+        } elseif ($freePlan) {
+            // Fallback ke Free kalau Premium tidak ada
+            Subscription::create([
+                'user_id'    => $user->id,
+                'plan_id'    => $freePlan->id,
+                'status'     => 'active',
+                'started_at' => now(),
+                'expired_at' => null, // Free tidak expired
+            ]);
+        }
     }
 
     // POST /verify-email/resend
