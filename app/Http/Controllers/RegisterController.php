@@ -7,6 +7,7 @@ use App\Models\EmailVerification;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -78,11 +79,12 @@ class RegisterController extends Controller
         // Kasih trial Premium 7 hari
         $this->assignPremiumTrial($user);
 
-        // TODO: generate default kategori setelah step ini selesai
+        // Generate default kategori
+        CategoryController::seedDefaults($user->id);
 
         session()->forget('verification_user_id');
 
-        return redirect()->route('login')->with('success', 'Email berhasil diverifikasi! Kamu mendapat Premium gratis selama 7 hari. Silakan login untuk mulai menggunakan FinTrack.');
+        return redirect()->route('login')->with('success', 'Email berhasil diverifikasi! Kamu mendapat Premium gratis selama 7 hari 🎉');
     }
 
     /**
