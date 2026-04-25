@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Budget;
+use App\Models\Transaction;
+use App\Observers\BudgetObserver;
+use App\Observers\TransactionObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Transaction::observe(TransactionObserver::class);
+        Budget::observe(BudgetObserver::class);
     }
 }

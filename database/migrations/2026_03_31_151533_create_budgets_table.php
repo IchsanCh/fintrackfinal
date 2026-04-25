@@ -14,7 +14,7 @@ return new class () extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->decimal('limit_amount', 15, 2);
+            $table->bigInteger('limit_amount');
             $table->integer('month');
             $table->integer('year');
             $table->timestamps();

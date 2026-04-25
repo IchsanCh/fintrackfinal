@@ -21,7 +21,7 @@ return new class () extends Migration {
                 ->constrained('accounts')
                 ->cascadeOnDelete();
 
-            $table->decimal('amount', 15, 2);
+            $table->bigInteger('amount');
             $table->string('note')->nullable();
             $table->date('transfer_date');
             $table->timestamps();

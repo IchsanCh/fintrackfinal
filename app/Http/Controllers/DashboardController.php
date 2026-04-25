@@ -23,18 +23,18 @@ class DashboardController extends Controller
             'account_count' => $user->accounts()->count(),
 
             // Pemasukan bulan ini
-            'income_this_month' => $user->transactions()
+            'income_this_month' => (int) round($user->transactions()
                 ->where('type', 'income')
                 ->whereMonth('transaction_date', now()->month)
                 ->whereYear('transaction_date', now()->year)
-                ->sum('amount'),
+                ->sum('amount')),
 
             // Pengeluaran bulan ini
-            'expense_this_month' => $user->transactions()
+            'expense_this_month' => (int) round($user->transactions()
                 ->where('type', 'expense')
                 ->whereMonth('transaction_date', now()->month)
                 ->whereYear('transaction_date', now()->year)
-                ->sum('amount'),
+                ->sum('amount')),
 
             // Saving goals aktif
             'active_saving_goals' => $user->savingGoals()

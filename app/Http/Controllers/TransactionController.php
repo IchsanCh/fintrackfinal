@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AccountTransfer;
 use App\Models\Transaction;
+use App\Models\TransactionAttachment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,22 +20,20 @@ class TransactionController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // ── Filters ──
         $filter = $request->input('filter', 'all');
         $from   = $request->input('from');
         $to     = $request->input('to');
 
-        // ── Transactions (income + expense) ──
         $txQuery = $user->transactions()
             ->with(['category', 'account', 'attachments'])
             ->latest('transaction_date');
 
         if ($filter === 'income') {
             $txQuery->where('type', 'income');
-        } elseif ($filter === 'expense') {
+        }
+        if ($filter === 'expense') {
             $txQuery->where('type', 'expense');
         }
-
         if ($from) {
             $txQuery->whereDate('transaction_date', '>=', $from);
         }
@@ -42,7 +41,6 @@ class TransactionController extends Controller
             $txQuery->whereDate('transaction_date', '<=', $to);
         }
 
-        // ── Transfers ──
         $accountIds = $user->accounts()->pluck('id');
         $tfQuery = AccountTransfer::whereIn('from_account_id', $accountIds)
             ->with(['fromAccount', 'toAccount'])
@@ -55,7 +53,6 @@ class TransactionController extends Controller
             $tfQuery->whereDate('transfer_date', '<=', $to);
         }
 
-        // ── Merge & paginate ──
         if ($filter === 'transfer') {
             $transactions = collect();
             $transfers    = $tfQuery->paginate(15)->withQueryString();
@@ -67,20 +64,18 @@ class TransactionController extends Controller
             $transfers    = collect();
         }
 
-        // ── Summary bulan ini ──
-        $incomeThisMonth = $user->transactions()
+        $incomeThisMonth = (int) round($user->transactions()
             ->where('type', 'income')
             ->whereMonth('transaction_date', now()->month)
             ->whereYear('transaction_date', now()->year)
-            ->sum('amount');
+            ->sum('amount'));
 
-        $expenseThisMonth = $user->transactions()
+        $expenseThisMonth = (int) round($user->transactions()
             ->where('type', 'expense')
             ->whereMonth('transaction_date', now()->month)
             ->whereYear('transaction_date', now()->year)
-            ->sum('amount');
+            ->sum('amount'));
 
-        // ── Data untuk form ──
         $accounts   = $user->accounts()->orderBy('name')->get();
         $categories = $user->categories()->orderBy('name')->get();
 
@@ -95,6 +90,40 @@ class TransactionController extends Controller
             'incomeThisMonth',
             'expenseThisMonth'
         ));
+    }
+
+    // GET /transactions/{transaction}
+    public function show(Transaction $transaction)
+    {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $transaction->load(['category', 'account', 'attachments']);
+
+        return response()->json([
+            'id'               => $transaction->id,
+            'type'             => $transaction->type,
+            'amount'           => $transaction->amount,
+            'note'             => $transaction->note,
+            'transaction_date' => $transaction->transaction_date,
+            'account'          => [
+                'id'   => $transaction->account->id,
+                'name' => $transaction->account->name,
+            ],
+            'category'         => [
+                'id'   => $transaction->category->id,
+                'name' => $transaction->category->name,
+                'icon' => $transaction->category->icon,
+            ],
+            'attachments'      => $transaction->attachments->map(fn ($a) => [
+                'id'        => $a->id,
+                'file_path' => $a->file_path,
+                'url'       => asset('storage/' . $a->file_path),
+                'is_image'  => str_contains($a->file_path, '.jpg') || str_contains($a->file_path, '.jpeg') || str_contains($a->file_path, '.png'),
+                'filename'  => basename($a->file_path),
+            ]),
+        ]);
     }
 
     // POST /transactions
@@ -128,7 +157,6 @@ class TransactionController extends Controller
         DB::transaction(function () use ($user, $data, $account, $request) {
             $transaction = $user->transactions()->create($data);
 
-            // Upload attachments
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
                     $path = $file->store("attachments/{$user->id}", 'public');
@@ -144,6 +172,73 @@ class TransactionController extends Controller
         });
 
         return back()->with('success', 'Transaksi berhasil ditambahkan.');
+    }
+
+    // PUT /transactions/{transaction}
+    public function update(Request $request, Transaction $transaction): RedirectResponse
+    {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'account_id'       => ['required', 'exists:accounts,id'],
+            'category_id'      => ['required', 'exists:categories,id'],
+            'amount'           => ['required', 'numeric', 'min:1'],
+            'type'             => ['required', 'in:income,expense'],
+            'note'             => ['nullable', 'string', 'max:255'],
+            'transaction_date' => ['required', 'date'],
+            'attachments'      => ['nullable', 'array', 'max:5'],
+            'attachments.*'    => ['file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'delete_attachments' => ['nullable', 'array'],
+            'delete_attachments.*' => ['exists:transaction_attachments,id'],
+        ]);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        DB::transaction(function () use ($user, $data, $transaction, $request) {
+            $oldAccount = $transaction->account;
+            $newAccount = $user->accounts()->findOrFail($data['account_id']);
+
+            // Rollback saldo lama
+            if ($transaction->type === 'income') {
+                $oldAccount->decrement('balance', $transaction->amount);
+            } else {
+                $oldAccount->increment('balance', $transaction->amount);
+            }
+
+            // Update transaksi
+            $transaction->update($data);
+
+            // Apply saldo baru
+            if ($data['type'] === 'income') {
+                $newAccount->increment('balance', $data['amount']);
+            } else {
+                $newAccount->decrement('balance', $data['amount']);
+            }
+
+            // Hapus attachment yang diminta
+            if (! empty($data['delete_attachments'])) {
+                $toDelete = TransactionAttachment::whereIn('id', $data['delete_attachments'])
+                    ->where('transaction_id', $transaction->id)
+                    ->get();
+
+                foreach ($toDelete as $att) {
+                    Storage::disk('public')->delete($att->file_path);
+                    $att->delete();
+                }
+            }
+
+            // Upload attachment baru
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $path = $file->store("attachments/{$user->id}", 'public');
+                    $transaction->attachments()->create(['file_path' => $path]);
+                }
+            }
+        });
+
+        return back()->with('success', 'Transaksi berhasil diperbarui.');
     }
 
     private function storeTransfer(Request $request, $user): RedirectResponse
@@ -188,12 +283,11 @@ class TransactionController extends Controller
                 $account->increment('balance', $transaction->amount);
             }
 
-            // Hapus file attachments dari storage
             foreach ($transaction->attachments as $att) {
                 Storage::disk('public')->delete($att->file_path);
             }
 
-            $transaction->delete(); // cascadeOnDelete handles DB records
+            $transaction->delete();
         });
 
         return back()->with('success', 'Transaksi berhasil dihapus.');

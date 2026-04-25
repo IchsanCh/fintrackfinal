@@ -15,7 +15,7 @@ return new class () extends Migration {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->enum('type', ['cash', 'bank', 'e-wallet']);
-            $table->decimal('balance', 15, 2)->default(0);
+            $table->bigInteger('balance')->default(0);
             $table->timestamps();
         });
     }
