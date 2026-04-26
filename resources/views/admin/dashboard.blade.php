@@ -112,7 +112,7 @@
     <div class="rounded-xl bg-base-200 border border-base-300 overflow-hidden">
         <div class="flex items-center justify-between px-5 py-4 border-b border-base-300">
             <h2 class="text-sm font-semibold text-base-content">User Terbaru</h2>
-            <a href="{{ route('admin.users.index') }}"
+            <a href="{{ Route::has('admin.users.index') ? route('admin.users.index') : '#' }}"
                 class="text-xs text-primary hover:text-primary/70 font-mono transition-colors">
                 Lihat semua →
             </a>

@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap");
 @import "tailwindcss";
 @plugin "daisyui";
+@import "trix/dist/trix.css";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -152,4 +153,155 @@
     background: oklch(13% 0.025 278);
     color: var(--color-base-content);
     padding: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────
+   TRIX EDITOR — Dark Theme Override
+   ───────────────────────────────────────────── */
+.ft-trix {
+    background: oklch(16% 0.025 278);
+    border: 1px solid oklch(56% 0.235 280 / 0.35);
+    border-radius: 0 0 0.75rem 0.75rem;
+    color: oklch(90% 0 0);
+    min-height: 200px;
+    padding: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.7;
+}
+
+.ft-trix:focus {
+    border-color: oklch(56% 0.235 280 / 0.7);
+    box-shadow: 0 0 0 3px oklch(56% 0.235 280 / 0.12);
+    outline: none;
+}
+
+trix-toolbar {
+    background: oklch(100% 0.00011 271.152);
+    border: 1px solid oklch(56% 0.235 280 / 0.35);
+    border-bottom: none;
+    border-radius: 0.75rem 0.75rem 0 0;
+    padding: 0.5rem;
+}
+
+trix-toolbar .trix-button {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    color: oklch(75% 0 0);
+    padding: 0.25rem 0.5rem;
+}
+
+trix-toolbar .trix-button:hover {
+    background: oklch(56% 0.235 280 / 0.15);
+    color: oklch(90% 0 0);
+}
+
+trix-toolbar .trix-button.trix-active {
+    background: oklch(56% 0.235 280 / 0.25);
+    color: oklch(70% 0.2 280);
+}
+
+trix-toolbar .trix-button-group {
+    border-color: oklch(30% 0.03 280);
+    margin-bottom: 0;
+}
+
+trix-toolbar .trix-button-group--file-tools {
+    display: none;
+}
+
+trix-toolbar .trix-dialog {
+    background: oklch(18% 0.025 278);
+    border: 1px solid oklch(56% 0.235 280 / 0.35);
+    border-radius: 0.5rem;
+    color: oklch(90% 0 0);
+    padding: 0.75rem;
+}
+
+trix-toolbar .trix-dialog input {
+    background: oklch(14% 0.02 280);
+    border: 1px solid oklch(56% 0.235 280 / 0.35);
+    border-radius: 0.375rem;
+    color: oklch(90% 0 0);
+    padding: 0.375rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+trix-toolbar .trix-dialog .trix-button-group {
+    border: none;
+}
+
+/* ─────────────────────────────────────────────
+   PROSE — Announcement content styling
+   ───────────────────────────────────────────── */
+.ft-prose {
+    font-size: 0.875rem;
+    line-height: 1.75;
+    color: oklch(80% 0 0 / 0.7);
+}
+
+.ft-prose h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--color-base-content);
+}
+.ft-prose h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.5rem;
+    color: var(--color-base-content);
+}
+.ft-prose h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem;
+    color: var(--color-base-content);
+}
+.ft-prose p {
+    margin-bottom: 0.75rem;
+}
+.ft-prose ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+.ft-prose ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+.ft-prose li {
+    margin-bottom: 0.25rem;
+}
+.ft-prose strong {
+    font-weight: 600;
+    color: var(--color-base-content);
+}
+.ft-prose em {
+    font-style: italic;
+}
+.ft-prose a {
+    color: oklch(56% 0.235 280);
+    text-decoration: underline;
+}
+.ft-prose a:hover {
+    opacity: 0.8;
+}
+.ft-prose blockquote {
+    border-left: 3px solid oklch(56% 0.235 280 / 0.4);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: oklch(80% 0 0 / 0.5);
+    font-style: italic;
+}
+.ft-prose pre {
+    background: oklch(10% 0.02 280);
+    border: 1px solid oklch(20% 0.03 280);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: "Space Mono", monospace;
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
 }

@@ -2,7 +2,6 @@
 
     <div class="max-w-2xl mx-auto">
 
-        {{-- Back --}}
         <a href="{{ route('notifications.index', ['tab' => 'announcements']) }}"
             class="inline-flex items-center gap-1.5 text-sm text-base-content/50 hover:text-base-content transition-colors mb-6">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -12,10 +11,8 @@
             Kembali ke pengumuman
         </a>
 
-        {{-- Card --}}
         <div class="rounded-xl bg-white/5 border border-base-300 overflow-hidden">
 
-            {{-- Header --}}
             <div class="px-6 py-5 border-b border-base-300">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-info/10 grid place-items-center shrink-0">
@@ -37,10 +34,9 @@
                 </div>
             </div>
 
-            {{-- Content --}}
             <div class="px-6 py-6">
-                <div class="prose prose-sm prose-invert max-w-none text-base-content/80 leading-relaxed">
-                    {!! nl2br(e($announcement->content)) !!}
+                <div class="ft-prose">
+                    {!! $announcement->content !!}
                 </div>
             </div>
 

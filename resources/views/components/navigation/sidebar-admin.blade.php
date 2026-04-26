@@ -28,6 +28,23 @@
                 ],
             ],
         ],
+        [
+            'label' => 'Monetisasi',
+            'items' => [
+                [
+                    'name' => 'Paket Langganan',
+                    'route' => 'admin.plans.index',
+                    'icon' =>
+                        '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+                ],
+                [
+                    'name' => 'Subscriptions',
+                    'route' => 'admin.subscriptions.index',
+                    'icon' =>
+                        '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+                ],
+            ],
+        ],
     ];
 @endphp
 
@@ -62,11 +79,11 @@
                 <ul class="space-y-0.5">
                     @foreach ($group['items'] as $item)
                         @php
-                            $active = request()->routeIs($item['route']);
+                            $active = Route::has($item['route']) && request()->routeIs($item['route']);
                         @endphp
                         <li>
                             {{-- {{ route($item['route']) }} --}}
-                            <a href=""
+                            <a href="{{ Route::has($item['route']) ? route($item['route']) : '#' }}"
                                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
                                       {{ $active ? 'bg-error/10 text-error' : 'text-base-content/60 hover:bg-base-300/60 hover:text-base-content' }}">
                                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
