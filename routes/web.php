@@ -9,6 +9,8 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\SavingGoalController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -67,6 +69,27 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
     Route::put('/budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
     Route::delete('/budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+
+    // Saving Goals
+    Route::get('/saving-goals', [SavingGoalController::class, 'index'])->name('saving-goals.index');
+    Route::post('/saving-goals', [SavingGoalController::class, 'store'])->name('saving-goals.store');
+    Route::put('/saving-goals/{savingGoal}', [SavingGoalController::class, 'update'])->name('saving-goals.update');
+    Route::post('/saving-goals/{savingGoal}/deposit', [SavingGoalController::class, 'deposit'])->name('saving-goals.deposit');
+    Route::post('/saving-goals/{savingGoal}/withdraw', [SavingGoalController::class, 'withdraw'])->name('saving-goals.withdraw');
+    Route::post('/saving-goals/{savingGoal}/cashout', [SavingGoalController::class, 'cashout'])->name('saving-goals.cashout');
+    Route::patch('/saving-goals/{savingGoal}/cancel', [SavingGoalController::class, 'cancel'])->name('saving-goals.cancel');
+    Route::delete('/saving-goals/{savingGoal}', [SavingGoalController::class, 'destroy'])->name('saving-goals.destroy');
+    Route::get('/saving-goals/{savingGoal}/history', [SavingGoalController::class, 'history'])->name('saving-goals.history');
+
+    // Notifikasi
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::delete('/notifications', [NotificationController::class, 'destroyAll'])->name('notifications.delete-all');
+
+    // Pengumuman (detail + mark read)
+    Route::get('/announcements/{announcement}', [NotificationController::class, 'showAnnouncement'])->name('announcements.show');
 });
 
 // Admin routes

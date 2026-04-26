@@ -14,10 +14,10 @@ return new class () extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
-            $table->decimal('target_amount', 15, 2);
-            $table->decimal('current_amount', 15, 2)->default(0);
+            $table->bigInteger('target_amount')->unsigned();
+            $table->bigInteger('current_amount')->unsigned()->default(0);
             $table->date('deadline')->nullable();
-            $table->enum('status', ['active', 'achieved', 'cancelled'])->default('active');
+            $table->enum('status', ['active', 'achieved', 'cancelled', 'completed'])->default('active');
             $table->timestamps();
         });
     }

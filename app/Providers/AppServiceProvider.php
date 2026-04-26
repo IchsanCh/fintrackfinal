@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Budget;
+use App\Models\SavingGoal;
 use App\Models\Transaction;
 use App\Observers\BudgetObserver;
+use App\Observers\SavingGoalObserver;
 use App\Observers\TransactionObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Transaction::observe(TransactionObserver::class);
         Budget::observe(BudgetObserver::class);
+        SavingGoal::observe(SavingGoalObserver::class);
     }
 }

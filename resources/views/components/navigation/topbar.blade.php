@@ -28,15 +28,34 @@
     <div class="flex items-center gap-2">
 
         {{-- Notifikasi --}}
-        <button class="btn btn-ghost btn-sm btn-square relative text-base-content/60 hover:text-base-content">
+        @php
+            $totalUnread = 0;
+            if (auth()->check()) {
+                $totalUnread =
+                    auth()->user()->notifications()->where('is_read', false)->count() +
+                    \App\Models\Announcement::where('is_active', true)
+                        ->whereNotIn(
+                            'id',
+                            \App\Models\AnnouncementRead::where('user_id', auth()->id())->pluck('announcement_id'),
+                        )
+                        ->count();
+            }
+        @endphp
+        <a href="{{ route('notifications.index') }}"
+            class="btn btn-ghost btn-sm btn-square relative text-base-content/60 hover:text-base-content">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            {{-- Badge unread --}}
-            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
-        </button>
+            @if ($totalUnread > 0)
+                <span
+                    class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center
+                             bg-error text-[10px] font-bold font-mono text-white rounded-full px-1">
+                    {{ $totalUnread > 99 ? '99+' : $totalUnread }}
+                </span>
+            @endif
+        </a>
 
         {{-- Avatar dropdown --}}
         <div class="dropdown dropdown-end">
