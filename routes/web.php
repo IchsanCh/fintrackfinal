@@ -9,6 +9,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\BillReminderController;
 use App\Http\Controllers\SavingGoalController;
 use App\Http\Controllers\NotificationController;
 
@@ -69,6 +70,13 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
     Route::put('/budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
     Route::delete('/budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+
+    // Bill Reminders
+    Route::get('/bill-reminders', [BillReminderController::class, 'index'])->name('bill-reminders.index');
+    Route::post('/bill-reminders', [BillReminderController::class, 'store'])->name('bill-reminders.store');
+    Route::put('/bill-reminders/{billReminder}', [BillReminderController::class, 'update'])->name('bill-reminders.update');
+    Route::post('/bill-reminders/{billReminder}/pay', [BillReminderController::class, 'pay'])->name('bill-reminders.pay');
+    Route::delete('/bill-reminders/{billReminder}', [BillReminderController::class, 'destroy'])->name('bill-reminders.destroy');
 
     // Saving Goals
     Route::get('/saving-goals', [SavingGoalController::class, 'index'])->name('saving-goals.index');
